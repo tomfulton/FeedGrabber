@@ -10,9 +10,16 @@ namespace FeedGrabber
     {
         static void Main(string[] args)
         {
+            var feeds = GetFeedUrls();
+
+            var downloader = new FeedsDownloader(feeds);
+
+            var articles = downloader.Download();
+
+            
         }
 
-        private List<string> GetFeedUrls()
+        private static List<Feed> GetFeedUrls()
         {
             throw new NotImplementedException();
         }
