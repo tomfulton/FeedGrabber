@@ -39,8 +39,9 @@
             {
                 articles.Add(new Article()
                 {
-                    ArticleGUID = Guid.NewGuid(),
+                    ArticleGUID =  Guid.NewGuid(),
                     FeedGUID = feed.FeedGuid,
+                    ArticleRemoteID = SelectSingleNodeValue<string>(xmlNode, "guid"),
                     ArticleUrl = SelectSingleNodeValue<string>(xmlNode, "link"),
                     ArticleTitle = SelectSingleNodeValue<string>(xmlNode, "title"),
                     ArticleDescription = SelectSingleNodeValue<string>(xmlNode, "description"),

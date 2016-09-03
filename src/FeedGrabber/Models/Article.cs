@@ -12,6 +12,12 @@
         [Column("FeedGUID")]
         public Guid FeedGUID { get; set; }
 
+        /// <summary>
+        /// 'guid' from the rss feed item
+        /// </summary>
+        [Column("ArticleRemoteID")]
+        public string ArticleRemoteID { get; set; }
+
         [Column("ArticleURL")]
         public string ArticleUrl { get; set; }
 
