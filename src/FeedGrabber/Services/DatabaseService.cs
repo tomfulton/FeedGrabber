@@ -1,23 +1,45 @@
 ﻿namespace FeedGrabber.Services
 {
     using Models;
-    using System.Linq;
+    using NPoco;
     using System;
+    using System.Linq;
 
     internal static class DatabaseService
     {
+        /// <summary>
+        /// TODO: mark feed as disabled if it's no longer in the source
+        /// </summary>
+        /// <param name="feedUrls">collection of urls that should be in the database</param>
+        internal static void InsertFeeds(string[] feedUrls)
+        {
+            Feed[] knownfeeds = DatabaseService.GetFeeds();
+
+            string[] unknownFeedUrls = feedUrls.Where(x => !knownfeeds.Any(y => y.FeedUrl == x)).ToArray();
+
+            // TODO: transaction
+
+            foreach (string unknownUrl in unknownFeedUrls)
+            {
+                DatabaseService.GetDatabase().Insert<Feed>(new Feed() {
+                    FeedGuid = Guid.NewGuid(),
+                    FeedUrl = unknownUrl,
+                    FeedTitle = "unknown",
+                    FeedDescription = "unknown",
+
+                });
+
+            }
+
+        }
+
         /// <summary>
         /// Gets a collection of known feeds from the database (that haven't yet been queried today)
         /// </summary>
         /// <returns></returns>
         internal static Feed[] GetFeeds()
         {
-            Feed[] feeds = new Feed[] {
-                new Feed() { FeedGuid = new Guid("48315D63-B6A6-40CB-BDAE-7696BC9B1AC0"), FeedTitle = "Skrift", FeedUrl = "http://skrift.io/articles/rss"  },
-                new Feed() { FeedGuid = new Guid("21102F3C-DDAE-4E05-8242-04063D9A4EFD"), FeedTitle = "Lee", FeedUrl = "https://leekelleher.com/feed" }
-            };
-
-            return feeds;
+            return DatabaseService.GetDatabase().Fetch<Feed>().ToArray();
         }
 
         internal static Article[] GetArticles(Feed feed)
@@ -33,11 +55,17 @@
         {
             if (articles.Any())
             {
-
                 // TODO: insert
-
             }
         }
 
+        /// <summary>
+        /// Get a NPoco reference to the database
+        /// </summary>
+        /// <returns></returns>
+        private static Database GetDatabase()
+        {
+            return new Database("DatabaseConnectionString");
+        }
     }
 }

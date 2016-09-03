@@ -28,6 +28,6 @@
         /// The date time of this feed was last queried
         /// </summary>
         [Column("LastQueryDateTime")]
-        public DateTime LastQueryDateTime { get; set; }
+        public DateTime? LastQueryDateTime { get; set; }
     }
 }
