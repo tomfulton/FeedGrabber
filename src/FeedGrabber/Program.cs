@@ -1,37 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FeedGrabber
+﻿namespace FeedGrabber
 {
-    class Program
+    using Models;
+    using Services;
+    using System;
+    using System.Linq;
+
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            var feeds = GetFeedUrls();
-
-            var downloader = new FeedsDownloader(feeds);
-
-            var articles = downloader.Download();
-
-            foreach (var article in articles)
+            // get feeds that should be queried for new articles
+            foreach(Feed feed in DatabaseService.GetFeeds())
             {
-                Console.WriteLine(article.SourceName + " - " + article.PublicationDate + " - " + article.Title);
+                Console.WriteLine("checking feed: " + feed.FeedUrl);
+
+                // TODO: parallel query
+                Article[] fetchedArticles = DownloadService.GetArticles(feed);
+
+                Console.WriteLine("fetched " + fetchedArticles.Count() + " articles");
+
+                Article[] knownArticles = DatabaseService.GetArticles(feed);
+
+                Console.WriteLine("found " + knownArticles.Count() + " known articles");
+
+                // throw away fetched articles that are already known
+                Article[] newArticles = fetchedArticles.Where(x => !knownArticles.Any(y => y.ArticleUrl == x.ArticleUrl)).ToArray();
+
+                Console.WriteLine("inserting " + newArticles.Count() + " new articles");
+
+                DatabaseService.InsertArticles(newArticles);          
             }
 
             Console.ReadKey(true);
-
-        }
-
-        private static List<Feed> GetFeedUrls()
-        {
-            return new List<Feed>()
-            {
-                new Feed() { Name = "Skrift", Url = "http://skrift.io/articles/rss" },
-                new Feed() { Name = "Lee", Url = "https://leekelleher.com/feed" }
-            };
         }
     }
 }
