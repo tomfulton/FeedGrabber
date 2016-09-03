@@ -12,7 +12,7 @@
         [Column("FeedGUID")]
         public Guid FeedGUID { get; set; }
 
-        [Column("ArticleUrl")]
+        [Column("ArticleURL")]
         public string ArticleUrl { get; set; }
 
         [Column("ArticleTitle")]

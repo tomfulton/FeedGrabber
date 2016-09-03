@@ -13,24 +13,28 @@
         /// <param name="feedUrls">collection of urls that should be in the database</param>
         internal static void InsertFeeds(string[] feedUrls)
         {
-            Feed[] knownfeeds = DatabaseService.GetFeeds();
 
-            string[] unknownFeedUrls = feedUrls.Where(x => !knownfeeds.Any(y => y.FeedUrl == x)).ToArray();
-
-            // TODO: transaction
-
-            foreach (string unknownUrl in unknownFeedUrls)
+            if (feedUrls.Any())
             {
-                DatabaseService.GetDatabase().Insert<Feed>(new Feed() {
-                    FeedGuid = Guid.NewGuid(),
-                    FeedUrl = unknownUrl,
-                    FeedTitle = "unknown",
-                    FeedDescription = "unknown",
+                Feed[] knownfeeds = DatabaseService.GetFeeds();
 
-                });
+                string[] unknownFeedUrls = feedUrls.Where(x => !knownfeeds.Any(y => y.FeedUrl == x)).ToArray();
 
+                // TODO: transaction
+
+                foreach (string unknownUrl in unknownFeedUrls)
+                {
+                    DatabaseService.GetDatabase().Insert<Feed>(new Feed()
+                    {
+                        FeedGuid = Guid.NewGuid(),
+                        FeedUrl = unknownUrl,
+                        FeedTitle = "unknown",
+                        FeedDescription = "unknown",
+
+                    });
+
+                }
             }
-
         }
 
         /// <summary>
@@ -39,12 +43,14 @@
         /// <returns></returns>
         internal static Feed[] GetFeeds()
         {
+            // TODO: filter out
+
             return DatabaseService.GetDatabase().Fetch<Feed>().ToArray();
         }
 
         internal static Article[] GetArticles(Feed feed)
         {
-            return new Article[] { };
+            return DatabaseService.GetDatabase().Fetch<Article>().ToArray();
         }
 
         /// <summary>
@@ -55,7 +61,7 @@
         {
             if (articles.Any())
             {
-                // TODO: insert
+                DatabaseService.GetDatabase().InsertBulk(articles);
             }
         }
 

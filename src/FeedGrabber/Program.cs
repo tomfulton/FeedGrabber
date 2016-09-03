@@ -3,6 +3,7 @@
     using Models;
     using Services;
     using System;
+    using System.Collections.Generic;
     using System.Configuration;
     using System.Linq;
 
@@ -12,6 +13,9 @@
         {
             // ensure all configured feeds are in the DB
             DatabaseService.InsertFeeds(DownloadService.GetFeedSources(ConfigurationManager.AppSettings["FeedSourceUrl"]));
+
+            List<Article> newArticles = new List<Article>();
+
 
             // get feeds that should be queried for new articles
             foreach (Feed feed in DatabaseService.GetFeeds())
@@ -28,12 +32,13 @@
                 Console.WriteLine("found " + knownArticles.Count() + " known articles");
 
                 // throw away fetched articles that are already known
-                Article[] newArticles = fetchedArticles.Where(x => !knownArticles.Any(y => y.ArticleUrl == x.ArticleUrl)).ToArray();
+                newArticles.AddRange(fetchedArticles.Where(x => !knownArticles.Any(y => y.ArticleUrl == x.ArticleUrl)));
 
-                Console.WriteLine("inserting " + newArticles.Count() + " new articles");
-
-                DatabaseService.InsertArticles(newArticles);          
             }
+
+            Console.WriteLine("inserting " + newArticles.Count() + " new articles");
+
+            DatabaseService.InsertArticles(newArticles.ToArray());
 
             Console.ReadKey(true);
         }
