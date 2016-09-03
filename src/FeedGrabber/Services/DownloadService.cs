@@ -52,6 +52,33 @@
             return articles.ToArray();
         }
 
+        /// <summary>
+        /// Gets the configured feed sources from the public list
+        /// </summary>
+        /// <param name="listUrl">The url of the XML file containing the feed sources</param>
+        /// <returns></returns>
+        internal static string[] GetFeedSources(string listUrl)
+        {
+            WebRequest webRequest = WebRequest.Create(listUrl);
+
+            WebResponse webResponse = webRequest.GetResponse();
+
+            Stream stream = webResponse.GetResponseStream();
+
+            XmlDocument xmlDocument = new XmlDocument();
+
+            xmlDocument.Load(stream);
+
+            XmlNodeList rssNodes = xmlDocument.SelectNodes("//Rss");
+
+            var urls = new List<string>();
+            foreach (XmlNode node in rssNodes)
+            {
+                urls.Add(node.Attributes["url"].Value);
+            }
+
+            return urls.ToArray();
+        }
 
         private static T SelectSingleNodeValue<T>(XmlNode xmlNode, string xpath)
         {
