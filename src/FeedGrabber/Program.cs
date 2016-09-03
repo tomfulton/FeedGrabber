@@ -16,12 +16,22 @@ namespace FeedGrabber
 
             var articles = downloader.Download();
 
-            
+            foreach (var article in articles)
+            {
+                Console.WriteLine(article.SourceName + " - " + article.PublicationDate + " - " + article.Title);
+            }
+
+            Console.ReadKey(true);
+
         }
 
         private static List<Feed> GetFeedUrls()
         {
-            throw new NotImplementedException();
+            return new List<Feed>()
+            {
+                new Feed() { Name = "Skrift", Url = "http://skrift.io/articles/rss" },
+                new Feed() { Name = "Lee", Url = "https://leekelleher.com/feed" }
+            };
         }
     }
 }

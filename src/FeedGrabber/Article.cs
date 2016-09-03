@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 
 namespace FeedGrabber
 {
@@ -8,22 +9,29 @@ namespace FeedGrabber
         public string Description { get; set; }
         public string Author { get; set; }
         public string Url { get; set; }
+        public DateTime PublicationDate { get; set; }
 
         public string SourceName { get; set; }
 
-        public Article(XmlNode node)
+        public Article(XmlNode node, string sourceName)
         {
+            SourceName = sourceName;
+
             var titleNode = node.SelectSingleNode("title");
             if (titleNode != null)
-                Title = titleNode.Value;
+                Title = titleNode.InnerText;
 
             var linkNode = node.SelectSingleNode("link");
             if (linkNode != null)
-                Url = linkNode.Value;
+                Url = linkNode.InnerText;
 
             var descriptionNode = node.SelectSingleNode("description");
             if (descriptionNode != null)
-                Description = descriptionNode.Value;
+                Description = descriptionNode.InnerText;
+
+            var pubDate = node.SelectSingleNode("pubDate");
+            if (pubDate != null)
+                PublicationDate = DateTime.Parse(pubDate.InnerText);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Xml;
 
@@ -23,7 +24,7 @@ namespace FeedGrabber
                 allArticles.AddRange(articlesFromFeed);
             }
 
-            return allArticles;
+            return allArticles.OrderByDescending(n => n.PublicationDate).ToList();
         }
 
         private List<Article> DownloadFromFeed(Feed feed)
@@ -41,7 +42,7 @@ namespace FeedGrabber
             var result = new List<Article>();
             foreach (XmlNode rssItem in rssItems)
             {
-                result.Add(new Article(rssItem));
+                result.Add(new Article(rssItem, feed.Name));
             }
             return result;
         }
